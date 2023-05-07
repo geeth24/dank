@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import Image from "next/image";
 
 export default function Home() {
-  const [image, setImage] = useState<string | null>("/soyjak6 1.png");
+  const [image, setImage] = useState<string | null>("/soyjak6 1.png"); // "/soyjak6 1.png
   const [text, setText] = useState("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,6 +27,8 @@ export default function Home() {
         if (navigator.share) {
           canvas.toBlob((blob) => {
             navigator.share({
+              title: "Meme",
+              text: "Meme",
               files: [
                 new File([blob as BlobPart], "meme.png", { type: "image/png" }),
               ],
