@@ -27,8 +27,6 @@ export default function Home() {
         if (navigator.share) {
           canvas.toBlob((blob) => {
             navigator.share({
-              title: "Meme",
-              text: "Meme",
               files: [
                 new File([blob as BlobPart], "meme.png", { type: "image/png" }),
               ],
