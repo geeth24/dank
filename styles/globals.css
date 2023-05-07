@@ -5,5 +5,5 @@
 .text-stroke {
   color: white;
   -webkit-text-stroke: 6.5px black;
-  /* font-family: "Inter", sans-serif; */
+  font-family: "Inter", sans-serif !important;
 }
