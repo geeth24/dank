@@ -56,7 +56,7 @@ const generate = async () => {
 
   if (captureElement) {
       const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
-  const blob = await (await fetch(dataUrl)).blob();
+  const blob = await fetch(dataUrl).then((res) => res.blob());
   const filesArray = [new File([blob], "meme.jpeg", { type: "image/jpeg" })];
   const shareData = {
     files: filesArray,
@@ -70,6 +70,7 @@ const generate = async () => {
 
   setGenerating(false);
   setGenerated(true);
+  generate();
 
   }
 };
