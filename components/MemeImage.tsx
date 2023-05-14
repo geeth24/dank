@@ -30,7 +30,7 @@ function MemeImage({
       <div className="relative flex w-full items-center justify-center">
         <div id="capture" className="relative">
           {image && (
-            <Image
+            <img
               src={image}
               alt="uploaded"
               width={1000}
@@ -46,6 +46,7 @@ function MemeImage({
                 top: `${textPosition + position.top}px`,
                 left: `${position.left}px`,
                 fontSize: `${fontSize}px`,
+                fontFamily: "Inter",
               }}
             >
               {memeText}
@@ -56,6 +57,7 @@ function MemeImage({
             style={{
               top: `${textPosition}px`,
               fontSize: `${fontSize}px`,
+              fontFamily: "Inter",
             }}
           >
             {memeText}

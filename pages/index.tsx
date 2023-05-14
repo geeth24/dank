@@ -19,6 +19,7 @@ export default function Home() {
   const [windowWidth, setWindowWidth] = useState(0);
 
   const [fontSize, setFontSize] = useState(20);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
@@ -41,8 +42,13 @@ export default function Home() {
   }, []);
 
 const share = async () => {
+  setSharing(true);
   const captureElement = document.getElementById("capture");
-  const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
+  //wait for 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  if (captureElement) {
+      const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
   const blob = await (await fetch(dataUrl)).blob();
   const filesArray = [new File([blob], "meme.jpeg", { type: "image/jpeg" })];
   const shareData = {
@@ -52,6 +58,10 @@ const share = async () => {
     await navigator.share(shareData);
   } else {
     console.log("Your system doesn't support sharing files.");
+  }
+
+  setSharing(false);
+
   }
 };
  
