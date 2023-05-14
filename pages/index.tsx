@@ -1,83 +1,86 @@
-import { useState } from "react";
+import MemeImage from "@/components/MemeImage";
+import Navbar from "@/components/Navbar";
+import TextInput from "@/components/TextInput";
+import Upload from "@/components/Upload";
 import html2canvas from "html2canvas";
-import Image from "next/image";
+import Head from "next/head";
+import { useEffect, useState } from "react";
+import * as htmlToImage from "html-to-image";
+import YSlider from "@/components/YSlider";
+import FontSlider from "@/components/FontSlider";
 
 export default function Home() {
   const [image, setImage] = useState<string | null>(""); // "/soyjak6 1.png
   const [text, setText] = useState("");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      let reader = new FileReader();
-      reader.onload = (e) => {
-        setImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(e.target.files[0]);
+  const [textPosition, setTextPosition] = useState(0);
+  const [canvasHeight, setCanvasHeight] = useState(0);
+
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  const [fontSize, setFontSize] = useState(20);
+
+  useEffect(() => {
+    setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
+    console.log(canvasHeight);
+  }, [windowWidth, image]);
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPosition = parseInt(e.target.value);
+    if (newPosition >= -canvasHeight && newPosition <= canvasHeight) {
+      setTextPosition(newPosition);
     }
   };
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
+  const handleWindowResize = () => {
+    setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
   };
 
-  const handleShare = () => {
-    html2canvas(document.querySelector("#capture") as HTMLElement).then(
-      (canvas) => {
-        const a = document.createElement("a");
-        if (navigator.share) {
-          canvas.toBlob((blob) => {
-            navigator.share({
-              files: [
-                new File([blob as BlobPart], "meme.png", { type: "image/png" }),
-              ],
-            });
-          });
-        } else {
-          const a = document.createElement("a");
-          a.href = canvas.toDataURL("image/png");
-          a.download = "meme.png";
-          a.click();
-        }
-      }
-    );
-  };
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
 
   return (
-    <div className="bg-black">
-      <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <div>
-          <label className="bg-gray-300 px-4 py-2 rounded-md cursor-pointer">
-            Upload Image
-            <input
-              type="file"
-              className="hidden"
-              onChange={handleImageChange}
-            />
-          </label>
-        </div>
-        <input
-          type="text"
-          placeholder="Enter your text here"
-          value={text}
-          onChange={handleTextChange}
-          className="border-2 border-gray-400 p-2 rounded-md my-5"
-        />{" "}
-        <div id="capture" className="relative">
-          {image && (
-            <Image src={image} alt="uploaded" width={500} height={500} />
-            // <div className="bg-white w-96 h-96"></div>
-          )}
-          <p className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-8xl font-black pb-10 text-stroke">
-            {text}
-          </p>
-        </div>
-        <button
-          onClick={handleShare}
-          className="bg-gray-300 px-4 py-2 mt-2 rounded-md cursor-pointer"
-        >
-          Share
-        </button>
-      </div>
+    <div className="h-fit bg-black p-6">
+      <Head>
+        <title>Dank - The Meme Generator</title>
+      </Head>
+      <Navbar />
+      <Upload image={image} setImage={setImage} />
+      {image && (
+        <>
+          <MemeImage
+            image={image}
+            memeText={text}
+            textPosition={textPosition}
+            fontSize={fontSize}
+          />
+          <YSlider
+            canvasHeight={canvasHeight}
+            textPosition={textPosition}
+            handleSliderChange={handleSliderChange}
+          />
+
+          <FontSlider fontSize={fontSize} setFontSize={setFontSize} />
+          <TextInput memeText={text} setMemeText={setText} />
+          <button
+            className="flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
+            onClick={() => {
+              htmlToImage
+                .toJpeg(document.getElementById("capture") as HTMLElement)
+                .then(function (dataUrl) {
+                  var link = document.createElement("a");
+                  link.download = "meme.jpeg";
+                  link.href = dataUrl;
+                  link.click();
+                });
+            }}
+          >
+            Share
+          </button>
+        </>
+      )}
     </div>
   );
 }

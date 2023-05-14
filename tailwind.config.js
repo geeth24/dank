@@ -17,5 +17,15 @@ module.exports = {
       sans: ["Inter", "sans-serif"],
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    base:false,
+    themes: [
+      {
+        mytheme: {
+          primary: "#0DB090",
+        },
+      },
+    ],
+  },
 };
