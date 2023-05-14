@@ -52,6 +52,7 @@ export default function Home() {
 const generate = async () => {
   setGenerating(true);
   setCaptureElement(document.getElementById("capture"));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   if (captureElement) {
       const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
