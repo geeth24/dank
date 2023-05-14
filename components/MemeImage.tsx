@@ -17,7 +17,7 @@ function MemeImage({
 }: MemeImageProps) {
   return (
     <div className="mt-4">
-      <div className="relative flex w-full items-center justify-center bg-transparent">
+      <div className="relative flex w-full items-center justify-center">
         <div id="capture" className="relative">
           {image && (
             <Image
