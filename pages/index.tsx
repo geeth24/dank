@@ -20,9 +20,13 @@ export default function Home() {
 
   const [fontSize, setFontSize] = useState(20);
   const [sharing, setSharing] = useState(false);
+  const [generating, setGenerating] = useState(false);
+
+  const [generated, setGenerated] = useState(false);
   
 
   const [captureElement, setCaptureElement] = useState<HTMLElement | null>();
+  const [shareData, setShareData] = useState<any>();
 
 
   useEffect(() => {
@@ -45,8 +49,8 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleWindowResize);
   }, []);
 
-const share = async () => {
-  setSharing(true);
+const generate = async () => {
+  setGenerating(true);
   setCaptureElement(document.getElementById("capture"));
 
   if (captureElement) {
@@ -56,15 +60,26 @@ const share = async () => {
   const shareData = {
     files: filesArray,
   };
+  setShareData(shareData);
+  // if (navigator.canShare && navigator.canShare(shareData)) {
+  //   await navigator.share(shareData);
+  // } else {
+  //   console.log("Your system doesn't support sharing files.");
+  // }
+
+  setGenerating(false);
+  setGenerated(true);
+
+  }
+};
+
+const share = async () => {
+  setSharing(true);
+  await generate();
   if (navigator.canShare && navigator.canShare(shareData)) {
     await navigator.share(shareData);
-  } else {
-    console.log("Your system doesn't support sharing files.");
   }
-
   setSharing(false);
-
-  }
 };
 
 useEffect(() => {
@@ -107,12 +122,23 @@ useEffect(() => {
 
           <FontSlider fontSize={fontSize} setFontSize={setFontSize} />
           <TextInput memeText={text} setMemeText={setText} />
+         {generated ? (
+
+
           <button
             className="flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
             onClick={share}
           >
-            Share
+           {sharing ? "Sharing..." : "Share"}
           </button>
+          ) : (
+             <button
+            className="flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
+            onClick={generate}
+          >
+            {generating ? "Generating..." : "Generate"}
+          </button>
+          )}
         </>
       )}
     </div>
