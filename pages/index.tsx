@@ -4,9 +4,10 @@ import TextInput from "@/components/TextInput";
 import Upload from "@/components/Upload";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import * as htmlToImage from "html-to-image";
 import YSlider from "@/components/YSlider";
 import FontSlider from "@/components/FontSlider";
+import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
 
 export default function Home() {
   const [image, setImage] = useState<string | null>("");
@@ -39,29 +40,31 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleWindowResize);
   }, []);
 
-  const shareImage = () => {
-    htmlToImage
-      .toBlob(document.getElementById("capture") as HTMLElement)
-      .then(function (dataUrl) {
-        if (navigator.share) {
-          navigator
-            .share({
-              files: [
-                new File([dataUrl as BlobPart], "meme.png", {
-                  type: "image/png",
-                }),
-              ],
-            })
-            .then(() => {
-              console.log("Image shared successfully");
-            })
-            .catch((error) => {
-              console.error("Error sharing image:", error);
-            });
-        } else {
-          console.log("Sharing not supported on this device");
-        }
-      });
+const share = async () => {
+  const captureElement = document.getElementById("capture");
+  const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
+  const blob = await (await fetch(dataUrl)).blob();
+  const filesArray = [new File([blob], "meme.jpeg", { type: "image/jpeg" })];
+  const shareData = {
+    files: filesArray,
+  };
+  if (navigator.canShare && navigator.canShare(shareData)) {
+    await navigator.share(shareData);
+  } else {
+    console.log("Your system doesn't support sharing files.");
+  }
+};
+ 
+
+  const down = () => {
+    const captureElement = document.getElementById("capture") as HTMLElement;
+    html2canvas(captureElement).then(function (canvas) {
+      const image = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = image;
+      a.download = "meme.png";
+      a.click();
+    });
   };
 
   return (
@@ -89,7 +92,7 @@ export default function Home() {
           <TextInput memeText={text} setMemeText={setText} />
           <button
             className="flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
-            onClick={shareImage}
+            onClick={share}
           >
             Share
           </button>

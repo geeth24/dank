@@ -1,4 +1,3 @@
-import { color } from "html2canvas/dist/types/css/types/color";
 import Image from "next/image";
 import React from "react";
 
@@ -15,6 +14,17 @@ function MemeImage({
   textPosition,
   fontSize,
 }: MemeImageProps) {
+  const strokeSize = 3; // Increase this value to make the stroke thicker
+  const positions = [
+    { top: -strokeSize, left: 0 },
+    { top: strokeSize, left: 0 },
+    { top: 0, left: -strokeSize },
+    { top: 0, left: strokeSize },
+    { top: -strokeSize, left: -strokeSize },
+    { top: -strokeSize, left: strokeSize },
+    { top: strokeSize, left: -strokeSize },
+    { top: strokeSize, left: strokeSize },
+  ];
   return (
     <div className="mt-4">
       <div className="relative flex w-full items-center justify-center">
@@ -28,23 +38,28 @@ function MemeImage({
               className="w-full object-contain"
             />
           )}
+          {positions.map((position) => (
+            <p
+              key={`${position.top}-${position.left}`}
+              className="absolute w-full text-center text-black"
+              style={{
+                top: `${textPosition + position.top}px`,
+                left: `${position.left}px`,
+                fontSize: `${fontSize}px`,
+              }}
+            >
+              {memeText}
+            </p>
+          ))}
           <p
-            className="absolute w-full text-center text-stroke"
-            style={{ top: `${textPosition}px`, fontSize: `${fontSize}px` ,
-            WebkitTextStroke: `${fontSize/25}px black`,
-            color: 'white'
-
-          
-          }}
+            className="absolute w-full text-center text-white"
+            style={{
+              top: `${textPosition}px`,
+              fontSize: `${fontSize}px`,
+            }}
           >
             {memeText}
           </p>
-          {/* <p
-            className="absolute w-full bg-black/50 text-center text-white"
-            style={{ top: `${textPosition}px`, fontSize: `${fontSize}px` }}
-          >
-            {memeText}
-          </p> */}
         </div>
       </div>
     </div>
