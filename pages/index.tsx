@@ -77,7 +77,7 @@ const generate = async () => {
 const share = async () => {
   setSharing(true);
   await generate();
-  if (navigator.canShare && navigator.canShare(shareData)) {
+  if (navigator.canShare && navigator.canShare(shareData) && !generating) {
     await navigator.share(shareData);
   }
   setSharing(false);
