@@ -20,6 +20,10 @@ export default function Home() {
 
   const [fontSize, setFontSize] = useState(20);
   const [sharing, setSharing] = useState(false);
+  
+
+  const [captureElement, setCaptureElement] = useState<HTMLElement | null>();
+
 
   useEffect(() => {
     setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
@@ -43,9 +47,7 @@ export default function Home() {
 
 const share = async () => {
   setSharing(true);
-  const captureElement = document.getElementById("capture");
-  //wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  setCaptureElement(document.getElementById("capture"));
 
   if (captureElement) {
       const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
@@ -64,6 +66,11 @@ const share = async () => {
 
   }
 };
+
+useEffect(() => {
+    setCaptureElement(document.getElementById("capture"));
+}, [image, text, textPosition, fontSize]);
+
  
 
   const down = () => {
