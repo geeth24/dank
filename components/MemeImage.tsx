@@ -52,7 +52,7 @@ function MemeImage({
                     top: `${textPosition + position.top}px`,
                     left: `${position.left}px`,
                     fontSize: `${fontSize}px`,
-                    fontFamily: "Inter",
+                    fontFamily: "Helvetica",
                     clipPath: "inset(0)",
                   }}
                 >
@@ -67,7 +67,7 @@ function MemeImage({
                 style={{
                   top: `${textPosition}px`,
                   fontSize: `${fontSize}px`,
-                  fontFamily: "Inter",
+                  fontFamily: "Helvetica",
                   clipPath: "inset(0)",
                 }}
               >
@@ -78,11 +78,11 @@ function MemeImage({
           )}
           {selectedTextStyle === "Snapchat" && (
             <div
-              className="bg-[#03000D80]/50 absolute w-full text-center text-white"
+              className="absolute w-full bg-[#03000D80]/50 text-center text-white"
               style={{
                 top: `${textPosition}px`,
                 fontSize: `${fontSize}px`,
-                fontFamily: "Inter",
+                fontFamily: "Helvetica",
                 clipPath: "inset(0)",
               }}
             >
@@ -97,7 +97,7 @@ function MemeImage({
                 top: `${textPosition}px`,
                 fontSize: `${fontSize}px`,
                 borderRadius: `${fontSize / 5}px`,
-                fontFamily: "Inter",
+                fontFamily: "Helvetica",
                 clipPath: "inset(0)",
                 left: "50%", // Add this line
                 transform: "translateX(-50%)", // Add this line

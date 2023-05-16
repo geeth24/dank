@@ -14,12 +14,12 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ["Inter", "sans-serif"],
+      sans: ["Helvetica", "sans-serif"],
     },
   },
   plugins: [require("daisyui")],
   daisyui: {
-    base:false,
+    base: false,
     themes: [
       {
         mytheme: {
