@@ -12,7 +12,7 @@ function YSlider({
   handleSliderChange,
 }: YSliderProps) {
   return (
-    <div className="mt-4 w-full">
+    <div className="w-full">
       <input
         type="range"
         className="range range-primary"

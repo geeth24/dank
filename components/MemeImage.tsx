@@ -6,6 +6,7 @@ interface MemeImageProps {
   memeText: string;
   textPosition: number;
   fontSize: number;
+  selectedTextStyle: string;
 }
 
 function MemeImage({
@@ -13,6 +14,7 @@ function MemeImage({
   memeText,
   textPosition,
   fontSize,
+  selectedTextStyle,
 }: MemeImageProps) {
   const strokeSize = 3; // Increase this value to make the stroke thicker
   const positions = [
@@ -25,10 +27,12 @@ function MemeImage({
     { top: strokeSize, left: -strokeSize },
     { top: strokeSize, left: strokeSize },
   ];
+  const formattedMemeText = memeText.replace(/\n/g, "<br>");
+
   return (
     <div className="mt-4">
       <div className="relative flex w-full items-center justify-center">
-        <div id="capture" className="relative">
+        <div id="capture" className="relative overflow-hidden">
           {image && (
             <img
               src={image}
@@ -38,30 +42,71 @@ function MemeImage({
               className="w-full object-contain"
             />
           )}
-          {positions.map((position) => (
-            <p
-              key={`${position.top}-${position.left}`}
-              className="absolute w-full text-center text-black"
+          {selectedTextStyle === "Default" && (
+            <div>
+              {positions.map((position) => (
+                <div
+                  key={`${position.top}-${position.left}`}
+                  className="absolute w-full text-center"
+                  style={{
+                    top: `${textPosition + position.top}px`,
+                    left: `${position.left}px`,
+                    fontSize: `${fontSize}px`,
+                    fontFamily: "Inter",
+                    clipPath: "inset(0)",
+                  }}
+                >
+                  {/* Use dangerouslySetInnerHTML to render HTML */}
+                  <span
+                    dangerouslySetInnerHTML={{ __html: formattedMemeText }}
+                  />
+                </div>
+              ))}
+              <div
+                className="absolute w-full text-center text-white"
+                style={{
+                  top: `${textPosition}px`,
+                  fontSize: `${fontSize}px`,
+                  fontFamily: "Inter",
+                  clipPath: "inset(0)",
+                }}
+              >
+                {/* Use dangerouslySetInnerHTML to render HTML */}
+                <span dangerouslySetInnerHTML={{ __html: formattedMemeText }} />
+              </div>
+            </div>
+          )}
+          {selectedTextStyle === "Snapchat" && (
+            <div
+              className="bg-[#03000D80]/50 absolute w-full text-center text-white"
               style={{
-                top: `${textPosition + position.top}px`,
-                left: `${position.left}px`,
+                top: `${textPosition}px`,
                 fontSize: `${fontSize}px`,
                 fontFamily: "Inter",
+                clipPath: "inset(0)",
               }}
             >
-              {memeText}
-            </p>
-          ))}
-          <p
-            className="absolute w-full text-center text-white"
-            style={{
-              top: `${textPosition}px`,
-              fontSize: `${fontSize}px`,
-              fontFamily: "Inter",
-            }}
-          >
-            {memeText}
-          </p>
+              {/* Use dangerouslySetInnerHTML to render HTML */}
+              <span dangerouslySetInnerHTML={{ __html: formattedMemeText }} />
+            </div>
+          )}
+          {selectedTextStyle === "Instagram" && (
+            <div
+              className="absolute bg-black pb-2 pl-10 pr-10 pt-2 text-center font-bold text-white"
+              style={{
+                top: `${textPosition}px`,
+                fontSize: `${fontSize}px`,
+                borderRadius: `${fontSize / 5}px`,
+                fontFamily: "Inter",
+                clipPath: "inset(0)",
+                left: "50%", // Add this line
+                transform: "translateX(-50%)", // Add this line
+              }}
+            >
+              {/* Use dangerouslySetInnerHTML to render HTML */}
+              <span dangerouslySetInnerHTML={{ __html: formattedMemeText }} />
+            </div>
+          )}
         </div>
       </div>
     </div>

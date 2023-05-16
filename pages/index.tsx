@@ -8,6 +8,7 @@ import YSlider from "@/components/YSlider";
 import FontSlider from "@/components/FontSlider";
 import html2canvas from "html2canvas";
 import domtoimage from "dom-to-image";
+import TextStyle from "@/components/TextStyle";
 
 export default function Home() {
   const [image, setImage] = useState<string | null>("");
@@ -22,12 +23,14 @@ export default function Home() {
   const [sharing, setSharing] = useState(false);
   const [generating, setGenerating] = useState(false);
 
+  const textStyles = ["Default", "Snapchat", "Twitter", "Instagram"];
+
+  const [selectedTextStyle, setSelectedTextStyle] = useState<string>("Default");
+
   const [generated, setGenerated] = useState(false);
-  
 
   const [captureElement, setCaptureElement] = useState<HTMLElement | null>();
   const [shareData, setShareData] = useState<any>();
-
 
   useEffect(() => {
     setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
@@ -49,46 +52,73 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleWindowResize);
   }, []);
 
-const generate = async () => {
-  setGenerating(true);
-  setCaptureElement(document.getElementById("capture"));
-  
+  const generate = async () => {
+    if (!generated) {
+      setGenerating(true);
+      setCaptureElement(document.getElementById("capture"));
 
-  if (captureElement) {
-      const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
-  const blob = await fetch(dataUrl).then((res) => res.blob());
-  const filesArray = [new File([blob], "meme.jpeg", { type: "image/jpeg" })];
-  const shareData = {
-    files: filesArray,
+      if (captureElement) {
+        const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
+        const blob = await fetch(dataUrl).then((res) => res.blob());
+        const filesArray = [
+          new File([blob], "meme.jpeg", { type: "image/jpeg" }),
+        ];
+        const shareData = {
+          files: filesArray,
+        };
+        setShareData(shareData);
+        // if (navigator.canShare && navigator.canShare(shareData)) {
+        //   await navigator.share(shareData);
+        // } else {
+        //   console.log("Your system doesn't support sharing files.");
+        // }
+
+        setGenerating(false);
+
+        // generate();
+      }
+    }
+    setGenerated(true);
   };
-  setShareData(shareData);
-  // if (navigator.canShare && navigator.canShare(shareData)) {
-  //   await navigator.share(shareData);
-  // } else {
-  //   console.log("Your system doesn't support sharing files.");
-  // }
 
-  setGenerating(false);
-  setGenerated(true);
-  generate();
+  const share = async () => {
+    setSharing(true);
+    await generate();
+    if (navigator.canShare && navigator.canShare(shareData)) {
+      await navigator.share(shareData);
+    }
+    setSharing(false);
+    setGenerated(false);
+  };
 
-  }
-};
+  useEffect(() => {
+    // Define a function to generate the meme
+    const generateMeme = async () => {
+      setGenerated(false);
+      setGenerating(true);
+      setCaptureElement(document.getElementById("capture"));
 
-const share = async () => {
-  setSharing(true);
-  await generate();
-  if (navigator.canShare && navigator.canShare(shareData)) {
-    await navigator.share(shareData);
-  }
-  setSharing(false);
-};
+      if (captureElement) {
+        const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
+        const blob = await fetch(dataUrl).then((res) => res.blob());
+        const filesArray = [
+          new File([blob], "meme.jpeg", { type: "image/jpeg" }),
+        ];
+        const shareData = {
+          files: filesArray,
+        };
+        setShareData(shareData);
+        setGenerating(false);
+      }
+      setGenerating(false);
+      setGenerated(true);
+    };
 
-useEffect(() => {
-    setCaptureElement(document.getElementById("capture"));
-}, [image, text, textPosition, fontSize]);
-
- 
+    // Call the generateMeme function when modifications are made to the necessary variables
+    if (image || text || textPosition || fontSize) {
+      generateMeme();
+    }
+  }, [image, text, textPosition, fontSize]);
 
   const down = () => {
     const captureElement = document.getElementById("capture") as HTMLElement;
@@ -115,7 +145,10 @@ useEffect(() => {
             memeText={text}
             textPosition={textPosition}
             fontSize={fontSize}
+            selectedTextStyle={selectedTextStyle}
           />
+          <TextInput memeText={text} setMemeText={setText} />
+
           <YSlider
             canvasHeight={canvasHeight}
             textPosition={textPosition}
@@ -123,23 +156,25 @@ useEffect(() => {
           />
 
           <FontSlider fontSize={fontSize} setFontSize={setFontSize} />
-          <TextInput memeText={text} setMemeText={setText} />
-         {generated ? (
-
-
-          <button
-            className="flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
-            onClick={share}
-          >
-           {sharing ? "Sharing..." : "Share"}
-          </button>
+          <TextStyle
+            selectedTextStyle={selectedTextStyle}
+            setSelectedTextStyle={setSelectedTextStyle}
+            textStyles={textStyles}
+          />
+          {generated ? (
+            <button
+              className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
+              onClick={share}
+            >
+              {sharing ? "Sharing..." : "Share"}
+            </button>
           ) : (
-             <button
-            className="flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
-            onClick={generate}
-          >
-            {generating ? "Generating..." : "Generate"}
-          </button>
+            <button
+              className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
+              onClick={generate}
+            >
+              {generating ? "Generating..." : "Generate"}
+            </button>
           )}
         </>
       )}
