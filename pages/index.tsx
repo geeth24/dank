@@ -118,7 +118,7 @@ export default function Home() {
     if (image || text || textPosition || fontSize) {
       generateMeme();
     }
-  }, [image, text, textPosition, fontSize]);
+  }, [image, text, textPosition, fontSize, selectedTextStyle]);
 
   const down = () => {
     const captureElement = document.getElementById("capture") as HTMLElement;
