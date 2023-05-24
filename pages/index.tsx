@@ -149,13 +149,17 @@ export default function Home() {
           />
           <TextInput memeText={text} setMemeText={setText} />
 
-          <YSlider
-            canvasHeight={canvasHeight}
-            textPosition={textPosition}
-            handleSliderChange={handleSliderChange}
-          />
+          {selectedTextStyle != "Twitter" && (
+            <>
+              <YSlider
+                canvasHeight={canvasHeight}
+                textPosition={textPosition}
+                handleSliderChange={handleSliderChange}
+              />
 
-          <FontSlider fontSize={fontSize} setFontSize={setFontSize} />
+              <FontSlider fontSize={fontSize} setFontSize={setFontSize} />
+            </>
+          )}
           <TextStyle
             selectedTextStyle={selectedTextStyle}
             setSelectedTextStyle={setSelectedTextStyle}

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import { StrokedText } from "stroked-text";
 
 interface MemeImageProps {
   image: string | null;
@@ -28,12 +29,13 @@ function MemeImage({
     { top: strokeSize, left: strokeSize },
   ];
   const formattedMemeText = memeText.replace(/\n/g, "<br>");
+  const lines = memeText.split("\n");
 
   return (
     <div className="mt-4">
       <div className="relative flex w-full items-center justify-center">
         <div id="capture" className="relative overflow-hidden">
-          {image && (
+          {image && selectedTextStyle != "Twitter" && (
             <img
               src={image}
               alt="uploaded"
@@ -42,40 +44,31 @@ function MemeImage({
               className="w-full object-contain"
             />
           )}
-          {selectedTextStyle === "Default" && (
-            <div>
-              {positions.map((position) => (
-                <div
-                  key={`${position.top}-${position.left}`}
-                  className="absolute w-full text-center"
-                  style={{
-                    top: `${textPosition + position.top}px`,
-                    left: `${position.left}px`,
-                    fontSize: `${fontSize}px`,
-                    fontFamily: "Helvetica",
-                    clipPath: "inset(0)",
-                  }}
-                >
-                  {/* Use dangerouslySetInnerHTML to render HTML */}
-                  <span
-                    dangerouslySetInnerHTML={{ __html: formattedMemeText }}
-                  />
-                </div>
-              ))}
-              <div
-                className="absolute w-full text-center text-white"
+          {selectedTextStyle === "Default" &&
+            lines.map((line, index) => (
+              //@ts-ignore
+              <StrokedText
+                key={index}
+                fill="white"
+                stroke="black"
+                strokeWidth={fontSize / 5}
                 style={{
-                  top: `${textPosition}px`,
+                  position: "absolute",
+                  textAlign: "center",
+                  font: `bold ${fontSize}px sans-serif`,
+                  top: `${textPosition + index * fontSize}px`,
                   fontSize: `${fontSize}px`,
                   fontFamily: "Helvetica",
                   clipPath: "inset(0)",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  width: "100%",
+                  // letterSpacing: "0.1em",
                 }}
               >
-                {/* Use dangerouslySetInnerHTML to render HTML */}
-                <span dangerouslySetInnerHTML={{ __html: formattedMemeText }} />
-              </div>
-            </div>
-          )}
+                {line}
+              </StrokedText>
+            ))}
           {selectedTextStyle === "Snapchat" && (
             <div
               className="absolute w-full bg-[#03000D80]/50 text-center text-white"
@@ -90,9 +83,63 @@ function MemeImage({
               <span dangerouslySetInnerHTML={{ __html: formattedMemeText }} />
             </div>
           )}
+          {selectedTextStyle === "Twitter" && (
+            <div className="">
+              {/* Use dangerouslySetInnerHTML to render HTML */}
+
+              {image && (
+                <div className="">
+                  <img
+                    src={image}
+                    alt="uploaded"
+                    width={1000}
+                    height={500}
+                    className="z-0 w-full object-contain"
+                  />
+                  <div className="absolute left-0 top-0 z-0 h-full w-full bg-[#f7f7f7]" />
+                  <div className="absolute left-0 top-0 z-10 p-2">
+                    <div className="flex flex-row items-start space-x-2">
+                      {image && (
+                        <img
+                          src="/dankfavi.png"
+                          alt="Overlay Image"
+                          className="h-10 w-10 rounded-full object-contain"
+                        />
+                      )}
+                      <div className="flex flex-col items-start space-x-1">
+                        <div className="flex flex-row items-start space-x-1">
+                          <p className="text-base font-bold text-black">
+                            kirkpatrick
+                          </p>
+                          <p className="text-sm font-bold text-[#67727E]">
+                            @patickrik31 · 22h{" "}
+                          </p>
+                        </div>
+                        <p className="text-base text-black">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: formattedMemeText,
+                            }}
+                          />
+                        </p>
+                        {image && (
+                          <img
+                            src={image}
+                            alt="Overlay Image"
+                            className="h-full w-[95%] rounded-lg object-contain"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Add this img element */}
+            </div>
+          )}
           {selectedTextStyle === "Instagram" && (
             <div
-              className="absolute bg-black pb-2 pl-10 pr-10 pt-2 text-center font-bold text-white"
+              className="absolute bg-black p-2 text-center font-bold text-white"
               style={{
                 top: `${textPosition}px`,
                 fontSize: `${fontSize}px`,
