@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { StrokedText } from "stroked-text";
+import TwitterIcon from "./TwitterIcon";
 
 interface MemeImageProps {
   image: string | null;
@@ -88,13 +89,13 @@ function MemeImage({
               {/* Use dangerouslySetInnerHTML to render HTML */}
 
               {image && (
-                <div className="">
+                <div className="p-16 lg:p-12">
                   <img
                     src={image}
                     alt="uploaded"
                     width={1000}
                     height={500}
-                    className="z-0 w-full object-contain"
+                    className="z-0 h-full w-full object-contain"
                   />
                   <div className="absolute left-0 top-0 z-0 h-full w-full bg-[#f7f7f7]" />
                   <div className="absolute left-0 top-0 z-10 p-2">
@@ -118,7 +119,9 @@ function MemeImage({
                         <p className="text-base text-black">
                           <span
                             dangerouslySetInnerHTML={{
-                              __html: formattedMemeText,
+                              __html: formattedMemeText
+                                ? formattedMemeText
+                                : "Your Text Goes Here",
                             }}
                           />
                         </p>
@@ -129,6 +132,12 @@ function MemeImage({
                             className="h-full w-[95%] rounded-lg object-contain"
                           />
                         )}
+                        <div className="mt-4 flex w-[95%] flex-row items-center justify-between">
+                          <TwitterIcon image="Reply" count={0} />
+                          <TwitterIcon image="Retweet" count={0} />
+                          <TwitterIcon image="Like" count={0} />
+                          <TwitterIcon image="Share" count={0} />
+                        </div>
                       </div>
                     </div>
                   </div>
