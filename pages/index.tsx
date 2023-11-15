@@ -93,7 +93,7 @@ export default function Home() {
   }, [image, text, textPosition, fontSize, selectedTextStyle, generateMeme]);
 
   return (
-    <div className="h-fit bg-black p-6">
+    <div className="mx-auto h-fit max-w-7xl  bg-black p-6">
       <Head>
         <title>Dank - The Meme Generator</title>
       </Head>
