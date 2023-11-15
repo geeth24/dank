@@ -89,7 +89,7 @@ function MemeImage({
               {/* Use dangerouslySetInnerHTML to render HTML */}
 
               {image && (
-                <div className="p-16 lg:p-12">
+                <div className="p-20 sm:p-16 lg:p-12">
                   <img
                     src={image}
                     alt="uploaded"

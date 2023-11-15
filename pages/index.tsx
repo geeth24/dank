@@ -79,12 +79,33 @@ export default function Home() {
 
   const shareMeme = useCallback(async () => {
     if (!sharing && shareData) {
+      let shareTimeout: number | undefined;
       setSharing(true);
+
       if (navigator.canShare && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
+        // Set a timeout to cancel sharing if not completed in 10 seconds
+        shareTimeout = window.setTimeout(() => {
+          setSharing(false);
+        }, 10000); // 10 seconds timeout
+
+        try {
+          await navigator.share(shareData);
+          // Clear the timeout if sharing is successful
+          clearTimeout(shareTimeout);
+        } catch (error) {
+          // Handle the error case
+          console.error("Error sharing:", error);
+        } finally {
+          // Ensure that sharing state is set to false after sharing
+          setSharing(false);
+        }
+      } else {
+        setSharing(false);
+        alert("Sharing is not supported or the data is not shareable.");
       }
-      setSharing(false);
     }
+    setSharing(false);
+    setShareData(undefined);
   }, [sharing, shareData]);
 
   // Simplify useEffect to watch for specific changes
@@ -107,7 +128,7 @@ export default function Home() {
     }
   }, [countdown, generateMeme]);
   return (
-    <div className="mx-auto h-fit max-w-7xl  bg-black p-6">
+    <div className="mx-auto h-fit max-w-7xl  overflow-hidden bg-black p-6">
       <Head>
         <title>Dank - The Meme Generator</title>
       </Head>
