@@ -3,9 +3,10 @@ import React from "react";
 interface UploadProps {
   image: string | null;
   setImage: React.Dispatch<React.SetStateAction<string | null>>;
+  generateMeme: () => void;
 }
 
-function Upload({ image, setImage }: UploadProps) {
+function Upload({ image, setImage, generateMeme }: UploadProps) {
   const convertToJpeg = (file: File) => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d")!;
@@ -60,6 +61,7 @@ function Upload({ image, setImage }: UploadProps) {
         convertToJpeg(file);
       }
     }
+    generateMeme();
   };
 
   return (

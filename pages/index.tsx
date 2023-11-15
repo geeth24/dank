@@ -133,7 +133,7 @@ export default function Home() {
         <title>Dank - The Meme Generator</title>
       </Head>
       <Navbar />
-      <Upload image={image} setImage={setImage} />
+      <Upload image={image} setImage={setImage} generateMeme={generateMeme} />
       {image && (
         <>
           <MemeImage
