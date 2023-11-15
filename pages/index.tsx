@@ -29,7 +29,6 @@ export default function Home() {
 
   const [generated, setGenerated] = useState(false);
 
-  const [captureElement, setCaptureElement] = useState<HTMLElement | null>();
   const [shareData, setShareData] = useState<any>();
 
   useEffect(() => {
@@ -42,11 +41,6 @@ export default function Home() {
       setTextPosition(newPosition);
     }
   };
-
-  const handleWindowResize = () => {
-    setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
-  };
-
   useEffect(() => {
     const handleResize = () => {
       setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
@@ -60,6 +54,7 @@ export default function Home() {
   }, []);
 
   const generateMeme = useCallback(async () => {
+    setGenerated(false);
     setGenerating(true);
     const captureElement = document.getElementById("capture");
 
@@ -135,7 +130,11 @@ export default function Home() {
             className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
             onClick={generated ? shareMeme : generateMeme}
           >
-            {sharing ? "Sharing..." : generated ? "Share" : "Generate"}
+            {sharing
+              ? "Sharing..."
+              : generated
+              ? "Share"
+              : `${generating ? "Generating..." : "Generate"}`}
           </button>
         </>
       )}
