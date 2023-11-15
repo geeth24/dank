@@ -34,7 +34,7 @@ function Upload({ image, setImage }: UploadProps) {
           }
         },
         "image/jpeg",
-        0.7 // Adjust the quality to manage the size
+        1 // Adjust the quality to manage the size
       );
     };
 
