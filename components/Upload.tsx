@@ -28,7 +28,6 @@ function Upload({ image, setImage }: UploadProps) {
                 setImage(e.target?.result as string);
               };
               reader.readAsDataURL(newFile);
-              alert("Image converted successfully");
             } else {
               alert("The converted image is over 2MB.");
             }

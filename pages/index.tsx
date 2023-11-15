@@ -30,6 +30,8 @@ export default function Home() {
   const [generated, setGenerated] = useState(false);
 
   const [shareData, setShareData] = useState<any>();
+  const [countdown, setCountdown] = useState(3); // Start the countdown at 3 seconds
+  const [changesMade, setChangesMade] = useState(false);
 
   useEffect(() => {
     setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
@@ -54,7 +56,6 @@ export default function Home() {
   }, []);
 
   const generateMeme = useCallback(async () => {
-    setGenerated(false);
     setGenerating(true);
     const captureElement = document.getElementById("capture");
 
@@ -70,6 +71,7 @@ export default function Home() {
       });
 
       setGenerated(true);
+      setChangesMade(false);
     }
 
     setGenerating(false);
@@ -88,10 +90,22 @@ export default function Home() {
   // Simplify useEffect to watch for specific changes
   useEffect(() => {
     if (image || text || textPosition || fontSize || selectedTextStyle) {
-      generateMeme();
+      setGenerated(false);
+      setChangesMade(true);
+      setCountdown(3); // Reset the countdown to 3 seconds whenever image or text changes
+      const timerId = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+
+      return () => clearInterval(timerId);
     }
   }, [image, text, textPosition, fontSize, selectedTextStyle, generateMeme]);
 
+  useEffect(() => {
+    if (countdown === 0) {
+      generateMeme();
+    }
+  }, [countdown, generateMeme]);
   return (
     <div className="mx-auto h-fit max-w-7xl  bg-black p-6">
       <Head>
@@ -126,6 +140,7 @@ export default function Home() {
             setSelectedTextStyle={setSelectedTextStyle}
             textStyles={textStyles}
           />
+
           <button
             className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
             onClick={generated ? shareMeme : generateMeme}
@@ -134,7 +149,15 @@ export default function Home() {
               ? "Sharing..."
               : generated
               ? "Share"
-              : `${generating ? "Generating..." : "Generate"}`}
+              : `${
+                  generating
+                    ? "Generating..."
+                    : `${
+                        changesMade
+                          ? `${countdown > 0 ? "Generating..." : "Generate"}`
+                          : "Generate"
+                      }`
+                }`}
           </button>
         </>
       )}
