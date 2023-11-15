@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import TextInput from "@/components/TextInput";
 import Upload from "@/components/Upload";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import YSlider from "@/components/YSlider";
 import FontSlider from "@/components/FontSlider";
 import html2canvas from "html2canvas";
@@ -48,88 +48,54 @@ export default function Home() {
   };
 
   useEffect(() => {
-    window.addEventListener("resize", handleWindowResize);
-    return () => window.removeEventListener("resize", handleWindowResize);
-  }, []);
-
-  const generate = async () => {
-    if (!generated) {
-      setGenerating(true);
-      setCaptureElement(document.getElementById("capture"));
-
-      if (captureElement) {
-        const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
-        const blob = await fetch(dataUrl).then((res) => res.blob());
-        const filesArray = [
-          new File([blob], "meme.jpeg", { type: "image/jpeg" }),
-        ];
-        const shareData = {
-          files: filesArray,
-        };
-        setShareData(shareData);
-        // if (navigator.canShare && navigator.canShare(shareData)) {
-        //   await navigator.share(shareData);
-        // } else {
-        //   console.log("Your system doesn't support sharing files.");
-        // }
-
-        setGenerating(false);
-
-        // generate();
-      }
-    }
-    setGenerated(true);
-  };
-
-  const share = async () => {
-    setSharing(true);
-    await generate();
-    if (navigator.canShare && navigator.canShare(shareData)) {
-      await navigator.share(shareData);
-    }
-    setSharing(false);
-    setGenerated(false);
-  };
-
-  useEffect(() => {
-    // Define a function to generate the meme
-    const generateMeme = async () => {
-      setGenerated(false);
-      setGenerating(true);
-      setCaptureElement(document.getElementById("capture"));
-
-      if (captureElement) {
-        const dataUrl = await domtoimage.toJpeg(captureElement as HTMLElement);
-        const blob = await fetch(dataUrl).then((res) => res.blob());
-        const filesArray = [
-          new File([blob], "meme.jpeg", { type: "image/jpeg" }),
-        ];
-        const shareData = {
-          files: filesArray,
-        };
-        setShareData(shareData);
-        setGenerating(false);
-      }
-      setGenerating(false);
-      setGenerated(true);
+    const handleResize = () => {
+      setCanvasHeight(document.getElementById("capture")?.clientHeight || 0);
     };
 
-    // Call the generateMeme function when modifications are made to the necessary variables
-    if (image || text || textPosition || fontSize) {
+    window.addEventListener("resize", handleResize);
+    // Initial resize call
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const generateMeme = useCallback(async () => {
+    setGenerating(true);
+    const captureElement = document.getElementById("capture");
+
+    if (captureElement) {
+      const dataUrl = await domtoimage.toJpeg(captureElement);
+      const blob = await fetch(dataUrl).then((res) => res.blob());
+      const filesArray = [
+        new File([blob], "meme.jpeg", { type: "image/jpeg" }),
+      ];
+
+      setShareData({
+        files: filesArray,
+      });
+
+      setGenerated(true);
+    }
+
+    setGenerating(false);
+  }, []);
+
+  const shareMeme = useCallback(async () => {
+    if (!sharing && shareData) {
+      setSharing(true);
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      }
+      setSharing(false);
+    }
+  }, [sharing, shareData]);
+
+  // Simplify useEffect to watch for specific changes
+  useEffect(() => {
+    if (image || text || textPosition || fontSize || selectedTextStyle) {
       generateMeme();
     }
-  }, [image, text, textPosition, fontSize, selectedTextStyle]);
-
-  const down = () => {
-    const captureElement = document.getElementById("capture") as HTMLElement;
-    html2canvas(captureElement).then(function (canvas) {
-      const image = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = image;
-      a.download = "meme.png";
-      a.click();
-    });
-  };
+  }, [image, text, textPosition, fontSize, selectedTextStyle, generateMeme]);
 
   return (
     <div className="h-fit bg-black p-6">
@@ -165,21 +131,12 @@ export default function Home() {
             setSelectedTextStyle={setSelectedTextStyle}
             textStyles={textStyles}
           />
-          {generated ? (
-            <button
-              className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
-              onClick={share}
-            >
-              {sharing ? "Sharing..." : "Share"}
-            </button>
-          ) : (
-            <button
-              className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
-              onClick={generate}
-            >
-              {generating ? "Generating..." : "Generate"}
-            </button>
-          )}
+          <button
+            className="mt-4 flex w-full flex-col items-center rounded-xl bg-[#0F77FF] px-6 py-4 text-2xl font-bold text-[#FAFAFA] transition duration-200 hover:bg-[#0F77FFb3] hover:shadow-lg"
+            onClick={generated ? shareMeme : generateMeme}
+          >
+            {sharing ? "Sharing..." : generated ? "Share" : "Generate"}
+          </button>
         </>
       )}
     </div>
